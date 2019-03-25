@@ -19,7 +19,7 @@ const unsigned int SCR_HEIGHT = 900;
 
 int main()
 {
-	// glfw: initialize and configure
+	// initialize and configure glfw
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -40,7 +40,7 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	// glad: load all OpenGL function pointers
+	// activate glad, load all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -125,7 +125,7 @@ int main()
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// texture coord attribute
+	// texture coordinate attribute
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
@@ -168,7 +168,7 @@ int main()
 	data = stbi_load("spincubewojak.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		// wojak.png has transparency, data type is of GL_RGBA
+		// wojak.png has transparency, data type is GL_RGBA
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -178,7 +178,8 @@ int main()
 	}
 	stbi_image_free(data);
 
-	// tell opengl for each sampler which texture unit it belongs to, DO ONCE
+	// tell opengl for each sampler which texture unit it belongs to
+	// ONLY DO setInt ONCE in process
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);
@@ -209,8 +210,7 @@ int main()
 		// camera/view transformation
 		float radius = 10.0f;
 		float camX = sin(glfwGetTime()) * radius;
-		float camZ = cos(glfwGetTime()) * radius;
-		// old version: projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		float camZ = cos(glfwGetTime()) * radius;		
 		projection = glm::perspective(glm::radians(35.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		// pass transformation matrices to the shader
@@ -236,28 +236,28 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		// glfw: swap buffers and poll events
+		// swap buffers and poll events in glfw
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	// optional: de-allocate resources
+	// de-allocate resources
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	// glfw: terminate, clearing GLFW resources.
+	// terminate glfw process, clearing GLFW resources.
 	glfwTerminate();
 	return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and respond
+// process all input: check w/GLFW whether relevant keys are pressed/released this frame and respond
 void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 }
 
-// glfw: when window size changes, execute callback
+// when window size changes, execute callback
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	// viewport has to match new window dimensions on resize
