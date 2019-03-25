@@ -1,2 +1,2 @@
 # OpenGLjams
-OpenGL experiments
+Render tests in OpenGL on Windows 10
